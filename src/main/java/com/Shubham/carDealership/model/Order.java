@@ -37,11 +37,47 @@ public class Order {
     private BigDecimal finalPrice;
 
     @Column(name = "status")
-    private String status = "COMPLETED";
+    private String status = "PENDING_PAYMENT";
 
     @Column(name = "payment_method")
     private String paymentMethod;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
+
+    @Column(name = "payment_intent_id")
+    private String paymentIntentId;
+
+    @Column(name = "customer_first_name")
+    private String customerFirstName;
+
+    @Column(name = "customer_last_name")
+    private String customerLastName;
+
+    @Column(name = "customer_email")
+    private String customerEmail;
+
+    @Column(name = "customer_phone")
+    private String customerPhone;
+
+    @Column(name = "customer_address")
+    private String customerAddress;
+
+    @Column(name = "customer_city")
+    private String customerCity;
+
+    @Column(name = "customer_postcode")
+    private String customerPostcode;
+
+    @Column(name = "delivery_method")
+    private String deliveryMethod;
+
+    @Column(name = "delivery_address")
+    private String deliveryAddress;
+
+    @Column(name = "special_instructions")
+    private String specialInstructions;
 }

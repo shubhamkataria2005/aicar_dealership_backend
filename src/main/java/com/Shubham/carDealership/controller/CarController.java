@@ -143,6 +143,86 @@ public class CarController {
         return ResponseEntity.ok(Map.of("success", true, "message", "Inspection status updated to " + newStatus));
     }
 
+    @PostMapping("/purchase-with-payment/{carId}")
+    public ResponseEntity<?> purchaseCarWithPayment(
+            @PathVariable Long carId,
+            @RequestBody Map<String, Object> request,
+            HttpServletRequest httpRequest) {
+
+        User user = getAuthenticatedUser(httpRequest);
+        if (user == null) {
+            return ResponseEntity.ok(Map.of("success", false, "message", "Please login first"));
+        }
+
+        Car car = carRepository.findById(carId).orElse(null);
+        if (car == null) {
+            return ResponseEntity.ok(Map.of("success", false, "message", "Car not found"));
+        }
+
+        if (!"AVAILABLE".equals(car.getStatus())) {
+            return ResponseEntity.ok(Map.of("success", false, "message", "Car is no longer available"));
+        }
+
+        Map<String, Object> customerDetails = (Map<String, Object>) request.get("customerDetails");
+
+        BigDecimal finalPrice = car.getPrice();
+        Long tradeInId = request.get("tradeInId") != null ? Long.valueOf(request.get("tradeInId").toString()) : null;
+        BigDecimal tradeInValue = BigDecimal.ZERO;
+
+        if (tradeInId != null) {
+            TradeIn tradeIn = tradeInRepository.findById(tradeInId).orElse(null);
+            if (tradeIn != null && "APPROVED".equals(tradeIn.getStatus())) {
+                tradeInValue = tradeIn.getFinalValue();
+                finalPrice = finalPrice.subtract(tradeInValue);
+                if (finalPrice.compareTo(BigDecimal.ZERO) < 0) {
+                    finalPrice = BigDecimal.ZERO;
+                }
+            }
+        }
+
+        car.setStatus("RESERVED");
+        car.setUpdatedAt(LocalDateTime.now());
+        carRepository.save(car);
+
+        Order order = new Order();
+        order.setUserId(user.getId());
+        order.setCarId(carId);
+        order.setOriginalPrice(car.getPrice());
+        order.setTradeInId(tradeInId);
+        order.setTradeInValue(tradeInValue);
+        order.setFinalPrice(finalPrice);
+        order.setStatus("PENDING_PAYMENT");
+        order.setPaymentMethod("PENDING");
+        order.setCreatedAt(LocalDateTime.now());
+        order.setUpdatedAt(LocalDateTime.now());
+
+        if (customerDetails != null) {
+            order.setCustomerFirstName((String) customerDetails.get("firstName"));
+            order.setCustomerLastName((String) customerDetails.get("lastName"));
+            order.setCustomerEmail((String) customerDetails.get("email"));
+            order.setCustomerPhone((String) customerDetails.get("phone"));
+            order.setCustomerAddress((String) customerDetails.get("address"));
+            order.setCustomerCity((String) customerDetails.get("city"));
+            order.setCustomerPostcode((String) customerDetails.get("postcode"));
+            order.setDeliveryMethod((String) customerDetails.get("pickupMethod"));
+            order.setDeliveryAddress((String) customerDetails.get("deliveryAddress"));
+            order.setSpecialInstructions((String) customerDetails.get("specialInstructions"));
+        }
+
+        Order savedOrder = orderRepository.save(order);
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("success", true);
+        response.put("message", "Order created. Please complete payment.");
+        response.put("order", savedOrder);
+        response.put("car", car);
+        response.put("finalPrice", finalPrice);
+        response.put("tradeInValue", tradeInValue);
+        response.put("originalPrice", car.getPrice());
+
+        return ResponseEntity.ok(response);
+    }
+
     @PostMapping("/purchase/{carId}")
     public ResponseEntity<?> purchaseCar(@PathVariable Long carId,
                                          @RequestBody Map<String, Object> request,

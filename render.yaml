@@ -1,0 +1,37 @@
+# render.yaml - Deploy configuration for Backend
+services:
+  - type: web
+    name: car-dealership-backend
+    runtime: image
+    repo: https://github.com/shubhamkataria2005/aicar_dealership_backend
+    branch: main
+    buildCommand: ./gradlew build
+    startCommand: java -jar build/libs/*.jar
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: SPRING_DATASOURCE_URL
+        fromDatabase:
+          name: car-dealership-db
+          property: connectionString
+      - key: SPRING_DATASOURCE_USERNAME
+        fromDatabase:
+          name: car-dealership-db
+          property: user
+      - key: SPRING_DATASOURCE_PASSWORD
+        fromDatabase:
+          name: car-dealership-db
+          property: password
+      - key: ML_CARRECOGNITION_URL
+        value: https://car-recognition-ml.onrender.com
+      - key: ML_TRADEIN_URL
+        value: https://tradein-ml.onrender.com
+      - key: JWT_SECRET
+        generateValue: true
+      - key: OPENAI_API_KEY
+        sync: false
+    plan: free
+
+databases:
+  - name: car-dealership-db
+    plan: free
