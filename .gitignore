@@ -1,0 +1,45 @@
+# Compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# IDE files
+.idea/
+*.iml
+.classpath
+.project
+.settings/
+.vscode/
+
+# Build directories
+build/
+target/
+out/
+gradle-app.setting
+
+# Log files
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# ML Models (stored in separate ml_services)
+*.h5
+*.pkl
+*.joblib
+*.pyc
+__pycache__/
+src/main/resources/models/
+test_*.jpg
+*.png
+*.jpeg
+
+# Environment
+.env
+application-local.properties
+
+# Gradle
+.gradle/
+
