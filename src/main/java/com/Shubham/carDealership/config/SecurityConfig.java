@@ -1,7 +1,9 @@
+// backend/src/main/java/com/Shubham/carDealership/config/SecurityConfig.java
 package com.Shubham.carDealership.config;
 
 import com.Shubham.carDealership.security.JwtFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -16,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -24,23 +27,26 @@ public class SecurityConfig {
     @Autowired
     private JwtFilter jwtFilter;
 
+    @Value("${cors.allowed.origins:https://ai-car-dealership-frontend.onrender.com,http://localhost:5173,http://localhost:3000}")
+    private String[] allowedOrigins;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        // Public endpoints — no token needed
                         .requestMatchers(
                                 "/api/auth/**",
                                 "/api/cars/all",
                                 "/api/cars/search",
-                                "/api/cars/{id}",
+                                "/api/cars/**",
                                 "/api/ai-assistant/chat",
                                 "/ws/**",
-                                "/api/car-recognition/**"  // ADD THIS LINE - allows car recognition endpoints
+                                "/api/car-recognition/**",
+                                "/health",
+                                "/actuator/health"
                         ).permitAll()
-                        // Everything else requires a valid JWT
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session
@@ -54,13 +60,10 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Arrays.asList(
-                "http://localhost:5173",
-                "http://localhost:3000",
-                "https://ai-car-dealership-frontend.onrender.com"
-        ));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
+        configuration.setAllowedOrigins(Arrays.asList(allowedOrigins));
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
         configuration.setAllowedHeaders(Arrays.asList("*"));
+        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type"));
         configuration.setAllowCredentials(true);
         configuration.setMaxAge(3600L);
 

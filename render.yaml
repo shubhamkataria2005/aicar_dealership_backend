@@ -1,4 +1,4 @@
-# render.yaml - Deploy configuration for Backend
+# backend/render.yaml
 services:
   - type: web
     name: car-dealership-backend
@@ -30,6 +30,11 @@ services:
         generateValue: true
       - key: OPENAI_API_KEY
         sync: false
+      - key: SPRING_PROFILES_ACTIVE
+        value: production
+      - key: SERVER_ERROR_INCLUDE_MESSAGE
+        value: always
+    healthCheckPath: /api/cars/all
     plan: free
 
 databases:
