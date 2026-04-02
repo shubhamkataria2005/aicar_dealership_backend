@@ -1,4 +1,4 @@
-// backend/src/main/java/com/Shubham/carDealership/config/SecurityConfig.java
+// src/main/java/com/Shubham/carDealership/config/SecurityConfig.java
 package com.Shubham.carDealership.config;
 
 import com.Shubham.carDealership.security.JwtFilter;
@@ -18,7 +18,6 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
-import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -44,8 +43,10 @@ public class SecurityConfig {
                                 "/api/ai-assistant/chat",
                                 "/ws/**",
                                 "/api/car-recognition/**",
+                                "/api/recognize/**",
                                 "/health",
-                                "/actuator/health"
+                                "/actuator/health",
+                                "/api/health"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

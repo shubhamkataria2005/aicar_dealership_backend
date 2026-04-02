@@ -1,3 +1,4 @@
+// src/main/java/com/Shubham/carDealership/controller/AuthController.java
 package com.Shubham.carDealership.controller;
 
 import com.Shubham.carDealership.config.JwtUtil;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173")
+@CrossOrigin(origins = {"https://ai-car-dealership-frontend.onrender.com", "http://localhost:5173", "http://localhost:3000"})
 public class AuthController {
 
     @Autowired

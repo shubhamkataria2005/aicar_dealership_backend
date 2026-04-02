@@ -34,7 +34,9 @@ services:
         value: production
       - key: SERVER_ERROR_INCLUDE_MESSAGE
         value: always
-    healthCheckPath: /api/cars/all
+      - key: CORS_ALLOWED_ORIGINS
+        value: https://ai-car-dealership-frontend.onrender.com,http://localhost:5173,http://localhost:3000
+    healthCheckPath: /api/health
     plan: free
 
 databases:
