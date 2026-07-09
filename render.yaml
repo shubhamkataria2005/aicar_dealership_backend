@@ -32,4 +32,4 @@ services:
       - key: MAIL_FROM_NAME
         value: "Shubham's Car Dealership"
       - key: CORS_ALLOWED_ORIGINS
-        value: https://ai-car-dealership-frontend.onrender.com,http://localhost:5173,http://localhost:5174,http://localhost:3000
+        value: https://dealership.shubhamkataria.com,https://ai-car-dealership-frontend.onrender.com,http://localhost:5173,http://localhost:5174,http://localhost:3000
